@@ -195,12 +195,6 @@ test = true
 bench = true
 doc = true
 
-[[bin]]
-name = "test-runner"
-path = "src/bin/test_runner.rs"
-test = true
-bench = true
-doc = true
 
 [package.metadata.docs.rs]
 features = ["full"]
