@@ -2,7 +2,7 @@
 //! 
 //! This is the main binary entry point for the Claude Code usage analysis tool.
 
-use ccusage_rs::{cli::App, error::Result, logging};
+use claude_code_usage_rs::{cli::App, error::Result, logging};
 
 #[tokio::main]
 async fn main() -> Result<()> {

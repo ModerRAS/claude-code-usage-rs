@@ -6,11 +6,12 @@
 use crate::data::models::*;
 use crate::analysis::statistics::StatisticsCalculator;
 use crate::error::Result;
-use chrono::{DateTime, Utc, NaiveDate, Duration};
+use chrono::{DateTime, Utc, NaiveDate, Duration, Timelike, Datelike};
+use serde::{Serialize, Deserialize};
 use std::collections::{HashMap, BTreeMap};
 
 /// Trend analysis configuration
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TrendAnalysisConfig {
     /// Number of days to include in trend analysis
     pub analysis_period_days: u32,
@@ -45,7 +46,7 @@ impl Default for TrendAnalysisConfig {
 }
 
 /// Trend analysis results
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TrendAnalysis {
     pub overall_trend: TrendDirection,
     pub cost_trend: TrendMetrics,
@@ -59,7 +60,7 @@ pub struct TrendAnalysis {
 }
 
 /// Trend direction
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum TrendDirection {
     Increasing,
     Decreasing,
@@ -68,7 +69,7 @@ pub enum TrendDirection {
 }
 
 /// Trend metrics
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TrendMetrics {
     pub growth_rate: f64,
     pub moving_average: Vec<f64>,
@@ -78,7 +79,7 @@ pub struct TrendMetrics {
 }
 
 /// Daily patterns
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DailyPatterns {
     pub peak_hours: Vec<u8>,
     pub low_hours: Vec<u8>,
@@ -87,7 +88,7 @@ pub struct DailyPatterns {
 }
 
 /// Weekly patterns
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WeeklyPatterns {
     pub peak_days: Vec<u8>, // 0 = Monday, 6 = Sunday
     pub low_days: Vec<u8>,
@@ -96,7 +97,7 @@ pub struct WeeklyPatterns {
 }
 
 /// Anomaly detection result
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Anomaly {
     pub date: NaiveDate,
     pub value: f64,
@@ -107,7 +108,7 @@ pub struct Anomaly {
 }
 
 /// Anomaly types
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum AnomalyType {
     Spike,
     Drop,
@@ -116,7 +117,7 @@ pub enum AnomalyType {
 }
 
 /// Anomaly severity levels
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum AnomalySeverity {
     Low,
     Medium,
@@ -125,7 +126,7 @@ pub enum AnomalySeverity {
 }
 
 /// Forecast results
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Forecast {
     pub forecast_period: Vec<NaiveDate>,
     pub cost_forecast: Vec<f64>,
@@ -136,7 +137,7 @@ pub struct Forecast {
 }
 
 /// Forecast methods
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum ForecastMethod {
     LinearRegression,
     MovingAverage,

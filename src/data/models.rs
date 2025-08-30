@@ -302,7 +302,7 @@ impl DailySummary {
     }
 
     /// Calculate peak usage hour
-    pub fn calculate_peak_hour(&self, records: &[UsageRecord]) {
+    pub fn calculate_peak_hour(&mut self, records: &[UsageRecord]) {
         let mut hour_counts = [0u32; 24];
         
         for record in records {

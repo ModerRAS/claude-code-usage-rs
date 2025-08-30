@@ -4,11 +4,12 @@
 
 use crate::data::models::*;
 use crate::error::Result;
-use chrono::{DateTime, Utc, NaiveDate};
+use chrono::{DateTime, Utc, NaiveDate, Timelike};
+use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
 
 /// Statistical summary
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct StatisticalSummary {
     pub count: usize,
     pub sum: f64,
@@ -42,7 +43,7 @@ impl StatisticalSummary {
 }
 
 /// Usage statistics
-#[derive(Debug, Clone, serde::Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UsageStatistics {
     pub total_requests: usize,
     pub total_tokens: u64,
@@ -61,7 +62,7 @@ pub struct UsageStatistics {
 }
 
 /// Model-specific statistics
-#[derive(Debug, Clone, serde::Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ModelStats {
     pub request_count: u32,
     pub total_tokens: u64,
@@ -90,9 +91,12 @@ impl StatisticsCalculator {
         let range = max - min;
         
         // Calculate variance and standard deviation
-        let variance = data.iter()
-            .map(|&x| (x - mean).powi(2))
-            .sum::<f64>() / count as f64;
+        let mut variance: f64 = 0.0;
+        for &x in data {
+            let diff: f64 = x - mean;
+            variance += diff.powi(2);
+        }
+        variance /= count as f64;
         let standard_deviation = variance.sqrt();
         
         // Calculate median
@@ -104,16 +108,17 @@ impl StatisticsCalculator {
             sorted_data[count / 2]
         };
         
-        // Calculate mode
-        let frequency = data.iter()
-            .fold(HashMap::new(), |mut acc, &x| {
-                *acc.entry(x).or_insert(0) += 1;
-                acc
-            });
+        // Calculate mode - use a different approach since f64 can't be HashMap key
+        let mut mode = None;
+        let mut max_count = 0;
         
-        let mode = frequency.into_iter()
-            .max_by_key(|(_, count)| *count)
-            .map(|(value, _)| value);
+        for &value in data {
+            let count = data.iter().filter(|&&x| (x - value).abs() < f64::EPSILON).count();
+            if count > max_count {
+                max_count = count;
+                mode = Some(value);
+            }
+        }
         
         // Calculate percentiles
         let mut percentiles = HashMap::new();

@@ -2,6 +2,7 @@
 
 use crate::data::models::*;
 use crate::analysis::calculator::CostCalculator;
+use crate::output::SessionAnalysis;
 use crate::error::Result;
 
 /// Session command handler
@@ -72,11 +73,3 @@ pub enum SessionResult {
     SessionAnalysis(SessionAnalysis),
 }
 
-/// Session analysis result
-pub struct SessionAnalysis {
-    pub session_id: String,
-    pub total_cost: f64,
-    pub request_count: u32,
-    pub total_tokens: u64,
-    pub duration: u64,
-}

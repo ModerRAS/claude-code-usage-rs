@@ -55,7 +55,7 @@ impl DataParser {
         
         for result in reader.records() {
             let record = result.map_err(|e| {
-                CcusageError::Csv(format!("Failed to read CSV record: {}", e))
+                CcusageError::Csv(e)
             })?;
             
             let usage_record = Self::parse_csv_record(&record)?;
@@ -371,7 +371,13 @@ impl DataParser {
             .ok_or_else(|| CcusageError::Validation("Metadata must be a JSON object".to_string()))?
             .clone();
 
-        Ok(metadata)
+        // Convert Map to HashMap
+        let mut hashmap = HashMap::new();
+        for (key, val) in metadata {
+            hashmap.insert(key, val);
+        }
+
+        Ok(hashmap)
     }
 
     /// Normalize model names

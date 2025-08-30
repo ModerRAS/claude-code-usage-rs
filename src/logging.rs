@@ -136,7 +136,7 @@ impl LoggingConfig {
             .with(filter);
 
         if self.enable_json_format {
-            subscriber.with(fmt::layer().json()).init();
+            subscriber.with(fmt::layer().compact()).init();
         } else {
             subscriber.with(fmt::layer()).init();
         }

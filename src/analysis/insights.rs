@@ -6,11 +6,12 @@
 use crate::data::models::*;
 use crate::analysis::{calculator::*, statistics::*, trends::*};
 use crate::error::Result;
-use chrono::{DateTime, Utc, NaiveDate};
+use chrono::{DateTime, Utc, NaiveDate, Timelike};
+use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
 
 /// Insight types
-#[derive(Debug, Clone, PartialEq, serde::Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum InsightType {
     CostOptimization,
     UsagePattern,
@@ -23,7 +24,7 @@ pub enum InsightType {
 }
 
 /// Insight severity levels
-#[derive(Debug, Clone, PartialEq, serde::Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum InsightSeverity {
     Informational,
     Low,
@@ -33,7 +34,7 @@ pub enum InsightSeverity {
 }
 
 /// Insight categories
-#[derive(Debug, Clone, PartialEq, serde::Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum InsightCategory {
     Cost,
     Usage,
@@ -44,7 +45,7 @@ pub enum InsightCategory {
 }
 
 /// Insight data structure
-#[derive(Debug, Clone, serde::Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Insight {
     pub id: String,
     pub insight_type: InsightType,
@@ -60,7 +61,7 @@ pub struct Insight {
 }
 
 /// Impact assessment
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ImpactAssessment {
     pub potential_savings: Option<f64>,
     pub potential_efficiency_gain: Option<f64>,
@@ -69,7 +70,7 @@ pub struct ImpactAssessment {
 }
 
 /// Risk levels
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum RiskLevel {
     None,
     Low,
@@ -78,7 +79,7 @@ pub enum RiskLevel {
 }
 
 /// Difficulty levels
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum DifficultyLevel {
     Easy,
     Moderate,
@@ -87,7 +88,7 @@ pub enum DifficultyLevel {
 }
 
 /// Insights engine configuration
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct InsightsEngineConfig {
     /// Enable cost optimization insights
     pub enable_cost_insights: bool,
@@ -303,7 +304,7 @@ impl InsightsEngine {
         let total_usage = usage_by_hour.values().sum::<u32>() as f64;
         let avg_usage = total_usage / 24.0;
         
-        for (hour, &count) in usage_by_hour {
+        for (hour, count) in usage_by_hour {
             let percentage = (count as f64 / total_usage) * 100.0;
             
             if percentage > 15.0 && (hour >= 22 || hour <= 6) {

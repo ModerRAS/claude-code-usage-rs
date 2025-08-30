@@ -5,15 +5,14 @@
 
 use crate::data::models::*;
 use crate::error::{Result, CcusageError};
-use crate::utils;
-use chrono::{DateTime, Utc, NaiveDate, Timelike};
-use crate::commands::SessionAnalysis;
+use crate::output::SessionAnalysis;
+use chrono::{DateTime, Utc, NaiveDate, Timelike, Datelike};
+use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
-use std::sync::Arc;
 use std::cell::RefCell;
 
 /// Cost calculator configuration
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CostCalculatorConfig {
     /// Enable detailed cost breakdown
     pub enable_breakdown: bool,
@@ -306,8 +305,8 @@ impl CostCalculator {
             .fold((None, None), |(first, last), record| {
                 let date = record.timestamp.date_naive();
                 (
-                    first.map_or(Some(date), |f| Some(f.min(date))),
-                    last.map_or(Some(date), |l| Some(l.max(date)))
+                    first.map_or(Some(date), |f: NaiveDate| Some(f.min(date))),
+                    last.map_or(Some(date), |l: NaiveDate| Some(l.max(date)))
                 )
             });
 
@@ -681,7 +680,7 @@ impl CostCalculator {
 }
 
 /// Detailed cost breakdown
-#[derive(Debug, Clone, serde::Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DetailedCostBreakdown {
     pub total_cost: f64,
     pub total_records: usize,
@@ -723,7 +722,7 @@ impl DetailedCostBreakdown {
 }
 
 /// Cost projection
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CostProjection {
     pub daily_average_cost: f64,
     pub projected_cost: f64,
@@ -747,7 +746,7 @@ impl Default for CostProjection {
 }
 
 /// Budget analysis
-#[derive(Debug, Clone, serde::Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BudgetAnalysis {
     pub budget_limit: f64,
     pub current_usage: f64,
@@ -763,7 +762,7 @@ pub struct BudgetAnalysis {
 }
 
 /// Optimization suggestion
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OptimizationSuggestion {
     pub suggestion_type: OptimizationType,
     pub title: String,
@@ -773,7 +772,7 @@ pub struct OptimizationSuggestion {
 }
 
 /// Optimization types
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum OptimizationType {
     ModelSwitch,
     Batching,
@@ -783,7 +782,7 @@ pub enum OptimizationType {
 }
 
 /// Priority levels
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum Priority {
     Low,
     Medium,
@@ -791,7 +790,7 @@ pub enum Priority {
 }
 
 /// Cache statistics
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CacheStats {
     pub cache_size: usize,
     pub hit_count: usize,
